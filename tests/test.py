@@ -20,4 +20,10 @@ bashr.echo("Hidden: " + bashr.Echo.Hidden + "test")
 bashr.echo("Strike: " + bashr.Echo.Strike + "test")
 bashr.echo("This is a \"Quote\" test")
 
+file = "out/test.txt"
+bashr.echo()
+bashr.echo(f"Touching {file}...")
+bashr.touch(file)
+bashr.echo(f"Done")
+
 bashr.close()

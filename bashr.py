@@ -73,14 +73,14 @@ def init():
 
     powershell = ""
     shell = ""
-
-    powershell_append("")
+    
+    powershell_append("Set-StrictMode -Version Latest\n")
 
 def initted():
     if not initialized:
         raise Exception("Bashr was not initialized. Did you forget to call bashr.init()?")
 
-def echo(message, no_newline=False):
+def echo(message="", no_newline=False):
     initted()
 
     contains_colors = message.find('\e[') != -1
@@ -103,6 +103,20 @@ def clear():
     initted()
     powershell_append("Clear-Host\n")
     shellscript_append("clear\n")
+
+def touch(file, suppress_output=True, ignore_errors=False):
+    initted()
+    
+    powershell_suppress = " | Out-Null" if suppress_output else ""
+    powershell_errors = " -ErrorAction SilentlyContinue" if ignore_errors else " -ErrorAction Stop"
+    powershell_append(f"if (Test-Path {file}) {{\n")
+    powershell_append(f"    (Get-Item {file}{powershell_errors}).LastWriteTime = Get-Date\n")
+    powershell_append("} else {\n")
+    powershell_append(f"    New-Item -ItemType File{powershell_errors} -Path {file}{powershell_suppress}\n")
+    powershell_append("}\n")
+    
+    shellscript_suppress = " > /dev/null" if suppress_output else ""
+    shellscript_append(f"touch {file}{shellscript_suppress}\n")
 
 def close():
     initted()
