@@ -75,6 +75,7 @@ def init():
     shell = ""
     
     powershell_append("Set-StrictMode -Version Latest\n")
+    powershell_append("$ErrorActionPreference = \"Stop\"\n")
 
 def initted():
     if not initialized:
@@ -108,11 +109,11 @@ def touch(file, suppress_output=True, ignore_errors=False):
     initted()
     
     powershell_suppress = " | Out-Null" if suppress_output else ""
-    powershell_errors = " -ErrorAction SilentlyContinue" if ignore_errors else " -ErrorAction Stop"
+    powershell_errors = " -ErrorAction SilentlyContinue" if ignore_errors else ""
     powershell_append(f"if (Test-Path {file}) {{\n")
     powershell_append(f"    (Get-Item {file}{powershell_errors}).LastWriteTime = Get-Date\n")
     powershell_append("} else {\n")
-    powershell_append(f"    New-Item -ItemType File{powershell_errors} -Path {file}{powershell_suppress}\n")
+    powershell_append(f"    New-Item -ItemType File{powershell_errors} -Path {'/'}{powershell_suppress}\n")
     powershell_append("}\n")
     
     shellscript_suppress = " > /dev/null" if suppress_output else ""
